@@ -1,0 +1,126 @@
+%% Copy and Paste this complete text into empty Ulysses sheet, and place it after front matter,
+%% or as first sheet, if no main heading or introduction is needed.
+%% 
+### Table of Contents
+~~ <div id="toc" class="toc">
+~~ </div>
+----
+~~ <div class="contents" id="contents">
+%% 
+%% This TOC sheet can be added just after frontmatter as it is. 
+%% It can also be inserted anywhere in the  document structure, 
+%% but then make sure that the <div id="contents"> tag is inserted above first heading to be included in the TOC.
+%% Works with any of Ulysses HTML-styles and preview, but not with Rich Text-styles.
+%% 
+%% If you want heading links without decoration (underlined), 
+%% add following section to your UL style sheet of choice,
+%% or just uncomment this block: (remove <!--  and -->)
+~~ <!--
+~~ <style type="text/css">
+~~ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a  {
+~~ 	text-decoration: none; 
+~~ 	 color:black; }
+~~ </style>
+~~ -->
+%% 
+%% If you need valid XHTML, a </div> closing tag should be put at the end of last sheet. 
+%% But this script works also fine without it. 
+%% 
+%% Variables: maxLevel;  listType "ul" or "ol"; tocTag "li" or "p"; 
+%% can be changed to modify look and feel of the TOC (See in script below)
+%% You can also add styles for: ul.toc, ol.toc, li.toc, and p.toc in CSS style sheet.
+%% 
+%% Added style for multi level numbering of <ol><li> tags
+%% Also CSS for auto numbering of headings corresponding to TOC
+%%
+%% If you want multilevel numbering of TOC, this can be added to your CSS-style sheet.
+%% It is included here for quick demo purpose only, and will not work with all browsers:
+~~ <!-- CSS for auto multi level TOC numbering : -->
+~~ <style type="text/css">
+~~ /* hide original list counter */
+~~ ol li {display:block;}
+~~ /* OR */
+~~ /* ol {list-style:none;}  */
+~~ 
+~~ ol > li:first-child {counter-reset: item;} /* reset counter */
+~~ ol > li {counter-increment: item;} /* increment counter */
+~~ ol > li:before {content:counters(item, ".") ". "; font-weight:normal;} /* print counter */
+~~ /* From: http://stackoverflow.com/questions/7791071 */
+~~ </style>
+%% 
+%% If you want nubered headings, this can be added to your CSS-style sheet.
+%% It is included here for quick demo purpose only, and will not work with all browsers:
+~~ <!-- CSS for auto numbering of headings: -->
+~~ <style type="text/css">
+~~ div.contents {counter-reset: h1c;}
+~~   h1 {counter-reset: h2c;}
+~~   h2 {counter-reset: h3c;}
+~~   h3 {counter-reset: h4c;}
+~~   h4 {counter-reset: h5c;}
+~~ 
+~~   div.contents h1:before {counter-increment: h1c; content: counter(h1c) ". ";}
+~~   div.contents h2:before {counter-increment: h2c; content: counter(h1c) "." counter(h2c) ". ";}
+~~   div.contents h3:before {counter-increment: h3c; content: counter(h1c) "." counter(h2c) "." counter(h3c) ". ";}
+~~   div.contents h4:before {counter-increment: h4c; content: counter(h1c) "." counter(h2c) "." counter(h3c) "." counter(h4c) ". ";}
+~~ 
+~~   /* From: http://philarcher.org/diary/2013/headingnumbers, and slightly modified. */
+~~ </style>
+%% 
+%% JavaScript generating TOC "on the fly":
+~~ <script type="text/javascript" language="javascript">
+~~ <!-- // JavaScript-code in XML comment block, to parse as valid XML. 
+~~      // </div>-tag is then also needed at the end of last sheet! 
+~~ window.onload = function () {
+~~     var maxLevel = 4;  // Max Header level in TOC
+~~     var listType = "ol";  // Use: "ul" or "ol" only! (ul = bullets, ol = numbers)
+~~     var tocTag ="li";   // Use: "li" or "p" only! (p = plain TOC, no bullets or numbers)
+~~     var toc = "";
+~~     var level = 0;
+~~     var tocId = 0;
+~~     document.getElementById("contents").innerHTML =
+~~         document.getElementById("contents").innerHTML.replace(
+~~         /<h(\d)>(.+?)<\/h(\d)>/gi,
+~~         function (str, openLevel, titleText, closeLevel) {
+~~             if (openLevel != closeLevel) {
+~~                 return str;
+~~             }
+~~ 
+~~ 	if (openLevel > maxLevel) {
+~~                   return str;
+~~              }
+~~ 
+~~             if (openLevel > level) {
+~~                 toc += (new Array(openLevel - level + 1)).join("<"+ listType +" class='toc'>");
+~~             } 
+~~             else if (openLevel < level) {
+~~                 toc += (new Array(level - openLevel + 1)).join("</"+ listType +">");
+~~             }
+~~ 
+~~             level = parseInt(openLevel);
+~~             tocId++;
+~~             var anchor = "h-id-" + tocId;
+~~             var tocAnchor = "toc-" + tocId;
+~~ 
+~~             toc += "<"+tocTag+" class='toc'><a href=\"#" + anchor 
+~~                    + "\" id='" + tocAnchor + "'>" 
+~~                    + titleText + "</a></"+tocTag+">";
+~~ 
+~~             return "<h" + openLevel + ">"
+~~                 + "<a id=\"" + anchor + "\" href='#" + tocAnchor + "'>"
+~~                 + titleText + "</a></h" + closeLevel + ">"; 
+~~         }
+~~     );
+~~ 
+~~     if (level) {
+~~         toc += (new Array(level + 1)).join("</ul>");
+~~     }
+~~ 
+~~     document.getElementById("toc").innerHTML += toc;
+~~ };
+~~ //-->
+~~ </script>
+%% Script copied from: 
+%% http://stackoverflow.com/questions/187619
+%% answer at Oct 9 2008 at 15:59 by: 
+%% http://stackoverflow.com/users/23501/ates-goral 
+%% Modified by RoyRogers56, 2014-05-19
